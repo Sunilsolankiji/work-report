@@ -233,6 +233,21 @@ function getAllBranches() {
   }
 }
 /**
+ * Get the root directory of the git repository
+ */
+function getGitRoot() {
+  try {
+    const gitRoot = execSync('git rev-parse --show-toplevel', {
+      encoding: 'utf8',
+      stdio: ['pipe', 'pipe', 'pipe'],
+    }).trim();
+    return gitRoot;
+  } catch (error) {
+    // Fallback to current directory if not in a git repo
+    return process.cwd();
+  }
+}
+/**
  * Get commits for a specific branch within the date range
  */
 function getCommitsForBranch(branch, startDate, endDate, author) {
@@ -405,7 +420,7 @@ function main() {
   }
   const commitsByBranch = getCommitsByBranch(dateRange.start, dateRange.end, author);
   console.log(generateConsoleReport(commitsByBranch, dateRange, author));
-  const reportDir = process.cwd();
+  const reportDir = path.join(getGitRoot(), 'work-report');
   if (!fs.existsSync(reportDir)) {
     fs.mkdirSync(reportDir, { recursive: true });
   }
