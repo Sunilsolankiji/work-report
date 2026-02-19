@@ -4,7 +4,7 @@
   "description": "Generate weekly work reports from Git commit history across all branches",
   "main": "generate-work-report.js",
   "bin": {
-    "work-report": "./generate-work-report.js"
+    "work-report": "generate-work-report.js"
   },
   "scripts": {
     "start": "node generate-work-report.js",
