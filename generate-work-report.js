@@ -264,6 +264,20 @@ function getAllBranches() {
 }
 
 /**
+ * Check if current directory is inside a git repository
+ */
+function isGitRepository() {
+    try {
+        execSync('git rev-parse --is-inside-work-tree', {
+            encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
+        });
+        return true;
+    } catch (error) {
+        return false;
+    }
+}
+
+/**
  * Get the root directory of the git repository
  */
 function getGitRoot() {
@@ -272,8 +286,7 @@ function getGitRoot() {
             encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
         }).trim();
     } catch (error) {
-        // Fallback to the current directory if not in a git repo
-        return process.cwd();
+        return null;
     }
 }
 
@@ -433,6 +446,10 @@ function generateConsoleReport(commitsByBranch, dateRange, author) {
 function main() {
     if (args.help || args.h) {
         showHelp();
+    }
+    if (!isGitRepository()) {
+        console.error('Error: Not a git repository. Please run this command inside a git repository.');
+        process.exit(1);
     }
     console.log('Generating work report...\n');
     const period = args.period || 'week';
