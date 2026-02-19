@@ -122,7 +122,7 @@ function getLastQuarterRange() {
     let year = today.getFullYear();
     if (currentQuarter === 0) {
         lastQuarterStartMonth = 9;
-        year = year - 1;
+        year -= 1;
     }
     const firstDay = new Date(year, lastQuarterStartMonth, 1);
     firstDay.setHours(0, 0, 0, 0);
@@ -251,12 +251,11 @@ function getAllBranches() {
  */
 function getGitRoot() {
     try {
-        const gitRoot = execSync('git rev-parse --show-toplevel', {
+        return execSync('git rev-parse --show-toplevel', {
             encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
         }).trim();
-        return gitRoot;
     } catch (error) {
-        // Fallback to current directory if not in a git repo
+        // Fallback to the current directory if not in a git repo
         return process.cwd();
     }
 }
