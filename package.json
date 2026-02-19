@@ -1,0 +1,35 @@
+{
+  "name": "work-report",
+  "version": "1.0.0",
+  "description": "Generate weekly work reports from Git commit history across all branches",
+  "main": "generate-work-report.js",
+  "bin": {
+    "work-report": "./generate-work-report.js"
+  },
+  "scripts": {
+    "start": "node generate-work-report.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "git",
+    "report",
+    "work",
+    "commits",
+    "weekly",
+    "productivity",
+    "cli"
+  ],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "files": [
+    "generate-work-report.js",
+    "README.md"
+  ]
+}
