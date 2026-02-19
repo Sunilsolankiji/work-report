@@ -9,6 +9,7 @@
  *
  * Options:
  *   --author="Your Name"     Filter commits by author
+ *   --me                      Use current git user as author
  *   --output=report.md       Specify custom output file path
  *   --period=week            Period type: week, month, quarter, year (default: week)
  *   --from=YYYY-MM-DD        Start date for custom range
@@ -26,6 +27,20 @@ const args = process.argv.slice(2).reduce((acc, arg) => {
 }, {});
 
 /**
+ * Get the current git user name
+ */
+function getCurrentGitAuthor() {
+    try {
+        return execSync('git config user.name', {
+            encoding: 'utf8', stdio: ['pipe', 'pipe', 'pipe'],
+        }).trim();
+    } catch (error) {
+        console.error('Error: Could not determine current git user. Make sure git user.name is configured.');
+        process.exit(1);
+    }
+}
+
+/**
  * Show help message
  */
 function showHelp() {
@@ -34,6 +49,7 @@ Work Report Generator - Generate reports from Git commit history
 Usage: work-report [options]
 Options:
   --author="Name"      Filter commits by author
+  --me                 Use current git user as author
   --output=file.md     Specify custom output file path
   --period=<type>      Period type (default: week)
                        Types: week, month, quarter, year, thisweek, thismonth
@@ -54,6 +70,7 @@ Examples:
   work-report --period=thisweek            # Current week so far
   work-report --from=2026-01-01 --to=2026-01-31  # Custom range
   work-report --author="John" --period=quarter   # Last quarter by author
+  work-report --me                               # Current git user's commits
 `);
     process.exit(0);
 }
@@ -420,7 +437,7 @@ function main() {
     console.log('Generating work report...\n');
     const period = args.period || 'week';
     const dateRange = getDateRange(period, args.from, args.to);
-    const author = args.author || null;
+    const author = args.me ? getCurrentGitAuthor() : (args.author || null);
     const outputFile = args.output || null;
     console.log(`Date range: ${formatDateForGit(dateRange.start)} to ${formatDateForGit(dateRange.end)}`,);
     if (args.from && args.to) {
