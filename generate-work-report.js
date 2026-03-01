@@ -400,47 +400,6 @@ function generateMarkdownReport(commitsByBranch, dateRange, author) {
 }
 
 /**
- * Generate a simple text report for console output
- */
-function generateConsoleReport(commitsByBranch, dateRange, author) {
-    const { start, end } = dateRange;
-    let totalCommits = 0;
-    for (const commits of Object.values(commitsByBranch)) {
-        totalCommits += commits.length;
-    }
-    let report = `\n${'='.repeat(60)}\n`;
-    report += `                    WORK REPORT\n`;
-    report += `${'='.repeat(60)}\n\n`;
-    report += `Period: ${formatDateForDisplay(start)}\n`;
-    report += `     to ${formatDateForDisplay(end)}\n\n`;
-    if (author) {
-        report += `Author: ${author}\n`;
-    }
-    report += `Total Commits: ${totalCommits}\n`;
-    report += `\n${'-'.repeat(60)}\n`;
-    const branchNames = Object.keys(commitsByBranch).sort();
-    if (branchNames.length === 0) {
-        report += `\nNo commits found for this period.\n`;
-    } else {
-        for (const branch of branchNames) {
-            const commits = commitsByBranch[branch];
-            report += `\n[${branch}] (${commits.length} commits)\n`;
-            report += `${'-'.repeat(40)}\n`;
-            for (const commit of commits) {
-                report += `  [${commit.hash}] ${commit.message}\n`;
-                report += `           ${commit.date}`;
-                if (!author) {
-                    report += ` by ${commit.author}`;
-                }
-                report += `\n`;
-            }
-        }
-    }
-    report += `\n${'='.repeat(60)}\n`;
-    return report;
-}
-
-/**
  * Main execution
  */
 function main() {
@@ -466,7 +425,6 @@ function main() {
         console.log(`Filtering by author: ${author}`);
     }
     const commitsByBranch = getCommitsByBranch(dateRange.start, dateRange.end, author);
-    console.log(generateConsoleReport(commitsByBranch, dateRange, author));
     const reportDir = path.join(getGitRoot(), 'work-report');
     if (!fs.existsSync(reportDir)) {
         fs.mkdirSync(reportDir, { recursive: true });
