@@ -19,6 +19,7 @@
 const { execSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
+const { pathToFileURL } = require('url');
 // Parse command line arguments
 const args = process.argv.slice(2).reduce((acc, arg) => {
     const [key, value] = arg.replace('--', '').split('=');
@@ -245,6 +246,18 @@ function formatDateForDisplay(date) {
 }
 
 /**
+ * Format a file or directory path as a clickable terminal link (OSC 8 hyperlink).
+ * Falls back to the plain path when output is not a terminal (e.g. piped to a file).
+ */
+function clickablePath(filePath) {
+    if (!process.stdout.isTTY) {
+        return filePath;
+    }
+    const url = pathToFileURL(filePath).href;
+    return `\u001b]8;;${url}\u0007${path.basename(filePath)}\u001b]8;;\u0007`;
+}
+
+/**
  * Get all real branches (excluding tags and stash)
  */
 function getAllBranches() {
@@ -432,7 +445,7 @@ function main() {
     const outputPath = outputFile ? path.resolve(outputFile) : path.join(reportDir, `work-report-${formatDateForFilename(dateRange.start)}-to-${formatDateForFilename(dateRange.end)}.md`,);
     const markdownReport = generateMarkdownReport(commitsByBranch, dateRange, author);
     fs.writeFileSync(outputPath, markdownReport, 'utf8');
-    console.log(`\nMarkdown report saved to: ${outputPath}`);
+    console.log(`\nMarkdown report saved to: ${clickablePath(outputPath)}`);
 }
 
 main();
